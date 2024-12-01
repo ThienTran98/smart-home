@@ -22,8 +22,8 @@ export default function LayoutRegisterAndLogin({ children }) {
 
       <div className=" px-40 py-36">
         <div className="flex items-center ">
-          <div className="h-[510px] mr-[220px]">{children}</div>
-          <div className="w-1/2 relative h-[510px] ">
+          <div className="h-[500px] mr-[220px]">{children}</div>
+          <div className="w-1/2 relative h-[500px] ">
             <img className="absolute top-0 left-0" src={vector4} alt="" />
             <img className="absolute" src={vector5} alt="" />
           </div>

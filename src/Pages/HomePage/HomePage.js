@@ -16,6 +16,26 @@ const fetch__data = [
   { id: 4, img: pic3, name: "Anh", role: "Truy cập" },
 ];
 export default function HomePage() {
+  fetch("http://localhost:8080/api/auth/signup", {
+    method: "post",
+    headers: {
+      Accept: "application/json, text/plain, */*",
+      "Content-Type": "application/json",
+      authorization:
+        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InVzZXJuYW1lIjoiZW1tYXdpbHNvbjc4OSJ9LCJpYXQiOjE3MzA1NTEyNTcsImV4cCI6MTczMDU1MTI3N30.aRPhAYFiqUBTHiKztp_ybMsk5G5otWYyOYPBQNCjEYs",
+    },
+    body: { name: "example", email: "example@example.com", password: 123456 },
+  })
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (result) {
+      alert(result);
+    })
+    .catch(function (error) {
+      console.log("Request failed", error);
+    });
+
   const renderMemberAccess = () => {
     return fetch__data.map((item, index) => {
       return (

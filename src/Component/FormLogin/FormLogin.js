@@ -5,8 +5,11 @@ import * as Yup from "yup";
 import { message } from "antd";
 import { postLogin } from "../../Service/userService";
 import { userLocalStorage } from "../../Service/localstorageService";
+import { useDispatch } from "react-redux";
+import { setUserLogin } from "../../redux/userSlice";
 export default function FormLogin() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -19,8 +22,9 @@ export default function FormLogin() {
     onSubmit: (values) => {
       postLogin(values)
         .then((res) => {
-          message.success(`${res.data.message} !`);
+          dispatch(setUserLogin(res.data));
           userLocalStorage.set(res.data);
+          message.success(`${res.data.message} !`);
           setTimeout(() => {
             navigate("/");
           }, 1000);

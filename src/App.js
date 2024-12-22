@@ -12,8 +12,15 @@ import Chart from "./Pages/Chart/Chart";
 import Setting from "./Pages/Setting/Setting";
 import Notification from "./Pages/Notification/Notification";
 import User from "./Pages/User/User";
+import { useSelector } from "react-redux";
 
 function App() {
+  const user = useSelector((state) => {
+    return state.userSlice.user;
+  });
+
+  console.log(" user: ", user);
+
   return (
     <>
       <BrowserRouter>
@@ -21,9 +28,15 @@ function App() {
           <Route
             path="/"
             element={
-              <LayoutDefault>
-                <HomePage />
-              </LayoutDefault>
+              user ? (
+                <LayoutDefault>
+                  <HomePage />
+                </LayoutDefault>
+              ) : (
+                <LayoutRegisterAndLogin>
+                  <Login />
+                </LayoutRegisterAndLogin>
+              )
             }
           />
           <Route

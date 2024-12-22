@@ -1,12 +1,15 @@
 import axios from "axios";
+import { userLocalStorage } from "./localstorageService";
 // import { store } from "./../index";
 // import { setLoadingOff, setLoadingOn } from "../redux-toolkit/spinnerSlice";
 
 export const base_URL = axios.create({
   baseURL: "http://localhost:8081",
-  // headers: {
-  //   authorization: "Bearer " + TOKEN,
-  // },
+  headers: {
+    authorization:
+      userLocalStorage.get()?.accessToken ||
+      userLocalStorage.get()?.refreshToken,
+  },
 });
 
 base_URL.interceptors.request.use(

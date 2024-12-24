@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import avt from "../../assets/img/Tech Life Communication.png";
 import door from "../../assets/img/Group 3341.png";
 import pic from "../../assets/img/profile pic.png";
@@ -8,6 +8,10 @@ import pic3 from "../../assets/img/Frame 3365 (2).png";
 import water from "../../assets/img/drop.png";
 import temp from "../../assets/img/thermometer.png";
 import mark from "../../assets/img/Mask group.png";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllUser } from "./../../Service/userService";
+import { setListAllUsers } from "../../redux/userSlice";
+import { listUserLocalStorage } from "../../Service/localstorageService";
 
 const fetch__data = [
   { id: 1, img: pic, name: "Phương Linh", role: "Truy cập" },
@@ -16,36 +20,46 @@ const fetch__data = [
   { id: 4, img: pic3, name: "Anh", role: "Truy cập" },
 ];
 export default function HomePage() {
-  fetch("http://localhost:8080/api/auth/signup", {
-    method: "post",
-    headers: {
-      Accept: "application/json, text/plain, */*",
-      "Content-Type": "application/json",
-      authorization:
-        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InVzZXJuYW1lIjoiZW1tYXdpbHNvbjc4OSJ9LCJpYXQiOjE3MzA1NTEyNTcsImV4cCI6MTczMDU1MTI3N30.aRPhAYFiqUBTHiKztp_ybMsk5G5otWYyOYPBQNCjEYs",
-    },
-    body: { name: "example", email: "example@example.com", password: 123456 },
-  })
-    .then(function (response) {
-      return response.json();
-    })
-    .then(function (result) {
-      alert(result);
-    })
-    .catch(function (error) {
-      console.log("Request failed", error);
-    });
+  const [listUser, setListUser] = useState([]);
+  const user = useSelector((state) => state.userSlice.user);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    getAllUser()
+      .then((res) => {
+        dispatch(setListAllUsers(res.data));
+        listUserLocalStorage.set(res.data);
+        setListUser(res.data);
+      })
+      .catch((err) => {
+        console.log("err: ", err);
+      });
+  }, []);
 
   const renderMemberAccess = () => {
-    return fetch__data.map((item, index) => {
+    return listUser.slice(0, 4).map((item, index) => {
       return (
         <div
           key={item.id}
           className="flex items-center justify-center flex-col"
         >
-          <img src={item.img} alt="" />
-          <h2 className="text-sm font-bold mt-2">{item.name}</h2>
-          <p className="text-xs opacity-45">{item.role}</p>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="size-8"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+            />
+          </svg>
+          <h2 className="text-sm font-bold my-3">{item.name}</h2>
+          <p className="text-xs opacity-45">
+            {item.role === "ADMIN" ? "Quản trị viên" : "Truy cập"}
+          </p>
         </div>
       );
     });
@@ -56,7 +70,7 @@ export default function HomePage() {
         <div className="col-span-2 flex items-center justify-between bg-white rounded-2xl p-6">
           <div>
             <h2 className="leading-7 font-bold text-2xl mb-3">
-              Xin chào, Dương Xuân Chính
+              Xin chào, {user.username}
             </h2>
             <p className="text-sm font-medium leading-4 opacity-40 mb-8">
               Chào mừng bạn trở về, chất lượng không khí thật trong lành. Hãy
@@ -130,7 +144,6 @@ export default function HomePage() {
                     d="M12 4.5v15m7.5-7.5h-15"
                   />
                 </svg>
-
                 <span className="ml-1">Thêm</span>
               </div>
               <div className="ml-3 hover:cursor-pointer hover:opacity-75">
@@ -162,7 +175,7 @@ export default function HomePage() {
       <div>
         <div className="grid grid-cols-3 gap-4">
           <div className="col-span-2 flex items-center justify-between">
-            <h2 className="font-bold text-2xl">Nhà của Chính</h2>
+            <h2 className="font-bold text-2xl">Nhà của {user.username}</h2>
             <div className=" flex items-center">
               <div className=" flex items-center">
                 <img src={water} alt="" />
@@ -218,7 +231,6 @@ export default function HomePage() {
               d="M12 4.5v15m7.5-7.5h-15"
             />
           </svg>
-
           <h2 className="font-semibold ml-1 ">Thêm mới</h2>
         </div>
       </div>

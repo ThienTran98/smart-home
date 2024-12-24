@@ -19,8 +19,6 @@ function App() {
     return state.userSlice.user;
   });
 
-  console.log(" user: ", user);
-
   return (
     <>
       <BrowserRouter>

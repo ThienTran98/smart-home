@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import pic from "../../assets/img/profile pic.png";
 import pic1 from "../../assets/img/image 6.png";
 import pic2 from "../../assets/img/Frame 3365 (1).png";
@@ -24,55 +24,10 @@ import {
   Pie,
   Cell,
 } from "recharts";
-
-const fetch__data = [
-  { id: 1, img: pic, name: "Phương Linh", role: "Truy cập" },
-  { id: 2, img: pic1, name: "Xuân Chính", role: "Truy cập" },
-  { id: 3, img: pic2, name: "Thùy", role: "Truy cập" },
-  { id: 4, img: pic3, name: "Anh", role: "Truy cập" },
-];
-
-const chart_data = [
-  {
-    name: "0:00 - 2:00",
-    "Độ ẩm": 39,
-  },
-  {
-    name: "2:00 - 4:00",
-    "Độ ẩm": 68,
-  },
-  {
-    name: "4:00 -6:00",
-    "Độ ẩm": 17,
-  },
-  {
-    name: "6:00 -8:00",
-    "Độ ẩm": 48,
-  },
-  {
-    name: "8:00 - 12:00",
-    "Độ ẩm": 52,
-  },
-  {
-    name: "12:00 - 14:00",
-    "Độ ẩm": 40,
-  },
-  {
-    name: "14:00 - 16:00",
-    "Độ ẩm": 40,
-  },
-];
-
-const data_1 = [
-  {
-    name: "Nhiệt độ",
-    value: 56,
-  },
-  {
-    name: "Độ ẩm",
-    value: 34,
-  },
-];
+import { useSelector } from "react-redux";
+import { getAllData } from "../../Service/iotService";
+import { useState } from "react";
+import moment from "moment";
 
 const CustomTooltipHeadCount = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -130,29 +85,91 @@ const renderCustomizedLabel = ({
 };
 
 export default function Chart() {
+  const user = useSelector((state) => state.userSlice.user);
+  const listUser = useSelector((state) => state.userSlice.listUser);
+
+  const [listIotData, setListIotData] = useState([]);
   const renderMemberAccess = () => {
-    return fetch__data.map((item, index) => {
+    return listUser.slice(0, 4).map((item, index) => {
       return (
         <div
           key={item.id}
           className="flex items-center justify-center flex-col"
         >
-          <img src={item.img} alt="" />
-          <h2 className="text-sm font-bold mt-2">{item.name}</h2>
-          <p className="text-xs opacity-45">{item.role}</p>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="size-8"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+            />
+          </svg>
+          <h2 className="text-sm font-bold my-3">{item.name}</h2>
+          <p className="text-xs opacity-45">
+            {item.role === "ADMIN" ? "Quản trị viên " : " Truy Cập"}
+          </p>
         </div>
       );
     });
   };
+  useEffect(() => {
+    getAllData()
+      .then((res) => {
+        setListIotData(res.data);
+      })
+      .catch((err) => {
+        console.log("err: ", err);
+      });
+  }, []);
+
+  const renderEnvironmentalTemperature = () => {
+    return listIotData.map((item, index) => {
+      return (
+        <tr
+          className={`${
+            item.id == listIotData.length ? "bg-white" : "bg-white  border-b"
+          }`}
+          key={item.id}
+        >
+          <th
+            scope="row"
+            className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+          >
+            {moment(`${item.timestamp}`).format("HH:mm:ss")}
+          </th>
+          <td className="px-6 py-2">{item.temperature}°C</td>
+          <td className="px-6 py-2">{item.humidity}%</td>
+        </tr>
+      );
+    });
+  };
+  const convertDataEnvironment = listIotData.map((item, index) => {
+    return {
+      name: `${moment(`${item?.timestamp}`).format("HH:mm:ss")}`,
+      "Nhiệt độ": item?.temperature ? item?.temperature : 0,
+      "Độ ẩm": item?.humidity ? item?.humidity : 0,
+    };
+  });
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-white text-[#002060] px-3 py-2 rounded-lg font-medium ">
           <p className="leading-8">Thời gian : {payload[0]?.payload.name}</p>
+
           <p className={`text-[#ed7d31] leading-8`}>
-            Độ ẩm :
-            <span className="mx-1">{payload[0]?.payload["Độ ẩm"]}°C</span>
+            Độ ẩm :<span className="mx-1">{payload[0]?.payload["Độ ẩm"]}%</span>
+          </p>
+
+          <p className={`text-[#003189] leading-8`}>
+            Nhiệt độ :
+            <span className="mx-1">{payload[0]?.payload["Nhiệt độ"]}°C</span>
           </p>
         </div>
       );
@@ -168,7 +185,7 @@ export default function Chart() {
             <div className="flex justify-between bg-white rounded-2xl p-6 mb-6">
               <div>
                 <h2 className="leading-7 font-bold text-2xl mb-3">
-                  Xin chào, Dương Xuân Chính
+                  Xin chào, {user.username}
                 </h2>
                 <p className="text-sm font-medium leading-4 opacity-40 mb-8">
                   Chào mừng bạn trở về, chất lượng không khí thật trong lành.
@@ -225,12 +242,13 @@ export default function Chart() {
             </div>
             {/* chart */}
             <div className="grid grid-cols-3 gap-4 bg-white h-[420px]">
-              <div className="col-span-2 w-full ">
+              <div className="col-span-3 w-full ">
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart
                     width={500}
                     height={400}
-                    data={chart_data}
+                    // data={chart_data}
+                    data={convertDataEnvironment}
                     margin={{
                       top: 20,
                       right: 10,
@@ -252,11 +270,6 @@ export default function Chart() {
                       scale="band"
                     />
                     <YAxis
-                      label={{
-                        value: "Độ ẩm",
-                        angle: -90,
-                        position: "insideLeft",
-                      }}
                       interval={0}
                       tick={{ fill: "#9b9b9b", fontSize: 14, fontWeight: 500 }}
                       domain={[0, 100]}
@@ -266,10 +279,11 @@ export default function Chart() {
                     <Tooltip content={<CustomTooltip />} />
                     <Legend />
                     <Line type="monotone" dataKey="Độ ẩm" stroke="#ff7300" />
+                    <Line type="monotone" dataKey="Nhiệt độ" stroke="#003189" />
                   </ComposedChart>
                 </ResponsiveContainer>
               </div>
-              <div className="col-span-1 flex items-center justify-center">
+              {/* <div className="col-span-1 flex items-center justify-center">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart width={400} height={400}>
                     <Pie
@@ -295,13 +309,13 @@ export default function Chart() {
                     <Tooltip content={<CustomTooltipHeadCount />} />
                   </PieChart>
                 </ResponsiveContainer>
-              </div>
+              </div> */}
             </div>
           </div>
           <div className="col-span-1">
             <div className="mb-5">
               <div className="flex items-center justify-between">
-                <h2 className="font-bold text-2xl">Nhà của Dương</h2>
+                <h2 className="font-bold text-2xl">Nhà của {user.username}</h2>
                 <div>
                   <form class="max-w-sm mx-auto">
                     <select
@@ -402,7 +416,7 @@ export default function Chart() {
               </div>
             </div>
             <div>
-              <h2 className="text-xl font-bold mb-3">
+              <h2 className="text-xl font-bold mb-3 mt-3">
                 Thông số thời gian thực
               </h2>
               <div className="bg-white px-2 py-2 rounded-xl">
@@ -420,58 +434,7 @@ export default function Chart() {
                       </th>
                     </tr>
                   </thead>
-                  <tbody>
-                    <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                      <th
-                        scope="row"
-                        className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                      >
-                        21:10:00
-                      </th>
-                      <td className="px-6 py-2">21.5°C</td>
-                      <td className="px-6 py-2">55.50%</td>
-                    </tr>
-                    <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                      <th
-                        scope="row"
-                        className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                      >
-                        21:12:00
-                      </th>
-                      <td className="px-6 py-2">23.5°C</td>
-                      <td className="px-6 py-2">54.50%</td>
-                    </tr>
-                    <tr className="bg-white border-b dark:bg-gray-800">
-                      <th
-                        scope="row"
-                        className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                      >
-                        21:13:00
-                      </th>
-                      <td className="px-6 py-2">21.5°C</td>
-                      <td className="px-6 py-2">56.50%</td>
-                    </tr>
-                    <tr className="bg-white border-b dark:bg-gray-800">
-                      <th
-                        scope="row"
-                        className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                      >
-                        21:13:00
-                      </th>
-                      <td className="px-6 py-2">21.5°C</td>
-                      <td className="px-6 py-2">56.50%</td>
-                    </tr>
-                    <tr className="bg-white dark:bg-gray-800">
-                      <th
-                        scope="row"
-                        className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                      >
-                        21:13:00
-                      </th>
-                      <td className="px-6 py-2">21.5°C</td>
-                      <td className="px-6 py-2">56.50%</td>
-                    </tr>
-                  </tbody>
+                  <tbody>{renderEnvironmentalTemperature()}</tbody>
                 </table>
               </div>
             </div>

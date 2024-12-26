@@ -21,6 +21,6 @@ export let postLogout = () => {
   return base_URL.post("/auth/logout");
 };
 
-export let deleteUser = (data) => {
-  return base_URL.post("/auth/delete", data);
+export let deleteUser = (password) => {
+  return base_URL.delete("/auth/delete", password);
 };

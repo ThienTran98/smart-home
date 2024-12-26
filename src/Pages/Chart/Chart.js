@@ -87,8 +87,8 @@ const renderCustomizedLabel = ({
 export default function Chart() {
   const user = useSelector((state) => state.userSlice.user);
   const listUser = useSelector((state) => state.userSlice.listUser);
-
   const [listIotData, setListIotData] = useState([]);
+
   const renderMemberAccess = () => {
     return listUser.slice(0, 4).map((item, index) => {
       return (
@@ -185,7 +185,7 @@ export default function Chart() {
             <div className="flex justify-between bg-white rounded-2xl p-6 mb-6">
               <div>
                 <h2 className="leading-7 font-bold text-2xl mb-3">
-                  Xin chào, {user.username}
+                  Xin chào, {user?.username ? user?.username : "Ẩn danh"}
                 </h2>
                 <p className="text-sm font-medium leading-4 opacity-40 mb-8">
                   Chào mừng bạn trở về, chất lượng không khí thật trong lành.
@@ -315,7 +315,9 @@ export default function Chart() {
           <div className="col-span-1">
             <div className="mb-5">
               <div className="flex items-center justify-between">
-                <h2 className="font-bold text-2xl">Nhà của {user.username}</h2>
+                <h2 className="font-bold text-2xl">
+                  Nhà của {user?.username ? user?.username : "Ẩn danh"}
+                </h2>
                 <div>
                   <form class="max-w-sm mx-auto">
                     <select

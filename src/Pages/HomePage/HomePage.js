@@ -70,7 +70,7 @@ export default function HomePage() {
         <div className="col-span-2 flex items-center justify-between bg-white rounded-2xl p-6">
           <div>
             <h2 className="leading-7 font-bold text-2xl mb-3">
-              Xin chào, {user.username}
+              Xin chào, {user?.username ? user?.username : "Ẩn danh"}
             </h2>
             <p className="text-sm font-medium leading-4 opacity-40 mb-8">
               Chào mừng bạn trở về, chất lượng không khí thật trong lành. Hãy
@@ -175,7 +175,9 @@ export default function HomePage() {
       <div>
         <div className="grid grid-cols-3 gap-4">
           <div className="col-span-2 flex items-center justify-between">
-            <h2 className="font-bold text-2xl">Nhà của {user.username}</h2>
+            <h2 className="font-bold text-2xl">
+              Nhà của {user?.username ? user?.username : "Ẩn danh"}
+            </h2>
             <div className=" flex items-center">
               <div className=" flex items-center">
                 <img src={water} alt="" />

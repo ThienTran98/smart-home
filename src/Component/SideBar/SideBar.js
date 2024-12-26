@@ -178,7 +178,7 @@ export default function SideBar() {
   const renderSidebar = () => {
     return data_Sidebar.map((item, index) => {
       return (
-        <div className="px-8 py-5">
+        <div className="px-8 py-5" key={item.id}>
           <NavLink
             onClick={() => {
               handleChangeIndex(item.id);

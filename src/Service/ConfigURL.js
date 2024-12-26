@@ -4,9 +4,9 @@ import { userLocalStorage } from "./localstorageService";
 // import { setLoadingOff, setLoadingOn } from "../redux-toolkit/spinnerSlice";
 
 export const base_URL = axios.create({
-  baseURL: "http://localhost:8081",
+  baseURL: "http://localhost:8080",
   headers: {
-    authorization:
+    Authorization:
       userLocalStorage.get()?.accessToken ||
       userLocalStorage.get()?.refreshToken,
   },

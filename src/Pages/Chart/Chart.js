@@ -25,7 +25,7 @@ import {
   Cell,
 } from "recharts";
 import { useSelector } from "react-redux";
-import { getAllData } from "../../Service/iotService";
+import { getAllData, getSuggestTemperature } from "../../Service/iotService";
 import { useState } from "react";
 import moment from "moment";
 
@@ -88,9 +88,10 @@ export default function Chart() {
   const user = useSelector((state) => state.userSlice.user);
   const listUser = useSelector((state) => state.userSlice.listUser);
   const [listIotData, setListIotData] = useState([]);
+  const [weather, setWeather] = useState({});
 
   const renderMemberAccess = () => {
-    return listUser.slice(0, 4).map((item, index) => {
+    return listUser?.slice(0, 4).map((item, index) => {
       return (
         <div
           key={item.id}
@@ -122,6 +123,16 @@ export default function Chart() {
     getAllData()
       .then((res) => {
         setListIotData(res.data);
+      })
+      .catch((err) => {
+        console.log("err: ", err);
+      });
+  }, []);
+
+  useEffect(() => {
+    getSuggestTemperature()
+      .then((res) => {
+        setWeather(res.data);
       })
       .catch((err) => {
         console.log("err: ", err);
@@ -176,6 +187,24 @@ export default function Chart() {
     }
 
     return null;
+  };
+
+  const handleChangeNumberY = () => {
+    if (
+      convertDataEnvironment.length > 15 &&
+      convertDataEnvironment.length < 26
+    ) {
+      return 3;
+    } else if (
+      convertDataEnvironment.length > 26 &&
+      convertDataEnvironment.length < 40
+    ) {
+      return 5;
+    } else if (convertDataEnvironment.length > 40) {
+      return 10;
+    } else {
+      return 1;
+    }
   };
   return (
     <div className="w-full bg-[#f3f5f4]">
@@ -241,7 +270,7 @@ export default function Chart() {
               </div>
             </div>
             {/* chart */}
-            <div className="grid grid-cols-3 gap-4 bg-white h-[420px]">
+            <div className="grid grid-cols-3 gap-4 bg-white h-[420px] rounded-lg">
               <div className="col-span-3 w-full ">
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart
@@ -264,7 +293,7 @@ export default function Chart() {
                         position: "insideBottomRight",
                         offset: 0,
                       }}
-                      interval={0}
+                      interval={handleChangeNumberY()}
                       tick={{ fill: "#9b9b9b", fontSize: 14, fontWeight: 500 }}
                       stroke="#CCCCCC"
                       scale="band"
@@ -310,6 +339,67 @@ export default function Chart() {
                   </PieChart>
                 </ResponsiveContainer>
               </div> */}
+            </div>
+            <div className=" bg-white px-5 py-4 rounded-lg mt-4">
+              <div>
+                <div className="flex items-center">
+                  <h2 className="text-lg font-bold text-[#9d9d9d]">
+                    Thời tiết hôm nay
+                  </h2>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="size-6 text-red-400 ml-2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 18a3.75 3.75 0 0 0 .495-7.468 5.99 5.99 0 0 0-1.925 3.547 5.975 5.975 0 0 1-2.133-1.001A3.75 3.75 0 0 0 12 18Z"
+                    />
+                  </svg>
+                </div>
+
+                <p className="text-base font-bold ">
+                  {moment(weather?.timestamp).format("hh:mm")}
+                </p>
+              </div>
+              <div className="flex items-center justify-between mt-5">
+                <div className="text-center">
+                  <h2 className="text-sm font-bold text-[#9d9d9d]">
+                    Nhiệt độ{" "}
+                  </h2>
+                  <p className="mt-3 font-bold text-blue-600">
+                    {weather?.currentTemperature} °C
+                  </p>
+                </div>
+                <div className="text-center">
+                  <h2 className="text-sm font-bold text-[#9d9d9d]">Độ ẩm </h2>
+                  <p className="mt-3 font-bold text-blue-600">
+                    {weather?.currentHumidity} %
+                  </p>
+                </div>
+                <div className="text-center">
+                  <h2 className="text-sm font-bold text-[#9d9d9d]">
+                    Đề xuất điều chỉnh nhiệt độ
+                  </h2>
+                  <p className="mt-3 font-bold text-blue-600">
+                    {weather?.suggestedACTemperature
+                      ? weather?.suggestedACTemperature > 0
+                        ? `Tăng ${weather?.suggestedACTemperature}`
+                        : `Giảm ${weather?.suggestedACTemperature}`
+                      : "0"}
+                    °C
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
           <div className="col-span-1">
@@ -421,7 +511,7 @@ export default function Chart() {
               <h2 className="text-xl font-bold mb-3 mt-3">
                 Thông số thời gian thực
               </h2>
-              <div className="bg-white px-2 py-2 rounded-xl">
+              <div className="bg-white px-2 py-2 rounded-xl max-h-[300px] overflow-y-scroll ">
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                   <thead className="text-xs text-gray-700 uppercase">
                     <tr>

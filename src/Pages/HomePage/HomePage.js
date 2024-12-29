@@ -36,10 +36,10 @@ export default function HomePage() {
   }, []);
 
   const renderMemberAccess = () => {
-    return listUser.slice(0, 4).map((item, index) => {
+    return listUser?.slice(0, 4).map((item, index) => {
       return (
         <div
-          key={item.id}
+          key={item?.id}
           className="flex items-center justify-center flex-col"
         >
           <svg

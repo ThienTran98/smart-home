@@ -5,10 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { deleteUser, postLogout } from "../../Service/userService";
 import { message } from "antd";
 import { setListAllUsers, setUserLogOut } from "../../redux/userSlice";
-import {
-  listUserLocalStorage,
-  userLocalStorage,
-} from "../../Service/localstorageService";
 import { useNavigate } from "react-router-dom";
 
 export default function Header() {
@@ -37,12 +33,10 @@ export default function Header() {
   const handleLogOut = () => {
     postLogout()
       .then((res) => {
-        userLocalStorage.remove();
-        listUserLocalStorage.remove();
+        localStorage.clear();
         message.success(res.data.message);
         dispatch(setUserLogOut(null));
         dispatch(setListAllUsers(null));
-
         setTimeout(() => {
           navigate("/");
         }, 1000);
@@ -61,13 +55,16 @@ export default function Header() {
   };
 
   const handleDeleteAccount = () => {
-    deleteUser({
-      password: "123456tT@",
-    })
+    const data = {
+      password: "$2b$10$XkptpS6SN2C3T/8B.CsNDu.K0yTKigZfyj.Y/.dnITP6G0AuhDFpS",
+    };
+    deleteUser(data)
       .then((res) => {
         console.log("res: ", res);
+        message.success(res.data.message);
       })
       .catch((err) => {
+        message.error(err.response.data);
         console.log("err: ", err);
       });
     console.log("show:111 ", show);

@@ -13,6 +13,7 @@ import Setting from "./Pages/Setting/Setting";
 import Notification from "./Pages/Notification/Notification";
 import User from "./Pages/User/User";
 import { useSelector } from "react-redux";
+import Loading from "./Component/Loading/Loading";
 
 function App() {
   const user = useSelector((state) => {
@@ -21,6 +22,7 @@ function App() {
 
   return (
     <>
+      <Loading />
       <BrowserRouter>
         <Routes>
           <Route

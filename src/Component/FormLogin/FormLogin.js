@@ -24,13 +24,17 @@ export default function FormLogin() {
         .then((res) => {
           dispatch(setUserLogin(res.data));
           userLocalStorage.set(res.data);
-          message.success(`${res.data.message} !`);
+          message.success({
+            content: `${res.data?.message} !`,
+            duration: 1,
+          });
           setTimeout(() => {
             navigate("/");
           }, 1000);
         })
         .catch((err) => {
-          message.error(`${err.response.message} please try again`, 2);
+          console.log("err: ", err);
+          message.error(`${err.response?.message} please try again`, 2);
         });
     },
   });

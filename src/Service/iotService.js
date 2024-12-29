@@ -19,11 +19,6 @@ export let deleteData = (data) => {
   return base_URL.delete("/api/delete-iotData", data);
 };
 
-//   {
-//     "id": 3,
-//     "tds": 1050,
-//     "temperature": 22,
-//     "pH": 6,
-//     "humidity": 65,
-//     "packet_no": 104
-//   }
+export let getSuggestTemperature = () => {
+  return base_URL.get("/api/suggest-temperature");
+};

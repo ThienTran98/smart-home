@@ -46,14 +46,17 @@ export default function FormRegister() {
     onSubmit: (values) => {
       postRegister(values)
         .then((response) => {
-          message.success(response.data.message);
+          message.success({
+            content: `${response.data?.message}`,
+            duration: 1,
+          });
           setTimeout(() => {
             navigate("/login");
           }, 1000);
         })
         .catch((error) => {
           console.log("error: ", error);
-          message.error(`${error.response.data} please try again!`);
+          message.error(`${error.response?.data} please try again!`);
         });
     },
   });

@@ -6,10 +6,12 @@ import reportWebVitals from "./reportWebVitals";
 import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
 import userSlice from "./redux/userSlice";
+import loadingSlice from "./redux/loadingSlice";
 
 export const store = configureStore({
   reducer: {
     userSlice: userSlice,
+    loadingSlice: loadingSlice,
   },
 });
 

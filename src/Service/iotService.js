@@ -22,3 +22,7 @@ export let deleteData = (data) => {
 export let getSuggestTemperature = () => {
   return base_URL.get("/api/suggest-temperature");
 };
+
+export let postTurnOffOrOffAirConditioner = (data) => {
+  return base_URL.post("/api/control", data);
+};

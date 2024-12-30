@@ -34,7 +34,7 @@ export default function FormLogin() {
         })
         .catch((err) => {
           console.log("err: ", err);
-          message.error(`${err.response?.message} please try again`, 2);
+          message.error(`${err.response?.data} please try again`, 2);
         });
     },
   });

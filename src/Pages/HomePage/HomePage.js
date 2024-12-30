@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllUser } from "./../../Service/userService";
 import { setListAllUsers } from "../../redux/userSlice";
 import { listUserLocalStorage } from "../../Service/localstorageService";
+import { postTurnOffOrOffAirConditioner } from "../../Service/iotService";
 
 const fetch__data = [
   { id: 1, img: pic, name: "Phương Linh", role: "Truy cập" },
@@ -21,6 +22,7 @@ const fetch__data = [
 ];
 export default function HomePage() {
   const [listUser, setListUser] = useState([]);
+  const [checked, setChecked] = useState(false);
   const user = useSelector((state) => state.userSlice.user);
   const dispatch = useDispatch();
   useEffect(() => {
@@ -64,6 +66,33 @@ export default function HomePage() {
       );
     });
   };
+
+  const handleChange = () => {
+    setChecked(!checked);
+
+    if (checked) {
+      postTurnOffOrOffAirConditioner({
+        value: 1,
+      })
+        .then((res) => {
+          console.log("res: ", res);
+        })
+        .catch((err) => {
+          console.log("err: ", err);
+        });
+    } else {
+      postTurnOffOrOffAirConditioner({
+        value: 0,
+      })
+        .then((res) => {
+          console.log("res:1 ", res);
+        })
+        .catch((err) => {
+          console.log("err:1 ", err);
+        });
+    }
+  };
+
   return (
     <div className="px-5">
       <div className="py-4 grid grid-cols-3 gap-4">
@@ -209,6 +238,7 @@ export default function HomePage() {
             <label className="inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
+                onChange={handleChange}
                 defaultValue
                 className="sr-only peer focus:border-none focus:outline-none"
               />

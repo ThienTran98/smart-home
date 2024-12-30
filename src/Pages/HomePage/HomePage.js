@@ -13,6 +13,7 @@ import { getAllUser } from "./../../Service/userService";
 import { setListAllUsers } from "../../redux/userSlice";
 import { listUserLocalStorage } from "../../Service/localstorageService";
 import { postTurnOffOrOffAirConditioner } from "../../Service/iotService";
+import { message } from "antd";
 
 const fetch__data = [
   { id: 1, img: pic, name: "Phương Linh", role: "Truy cập" },
@@ -69,29 +70,35 @@ export default function HomePage() {
 
   const handleChange = () => {
     setChecked(!checked);
+  };
 
+  useEffect(() => {
     if (checked) {
       postTurnOffOrOffAirConditioner({
-        value: 1,
+        value: checked ? 1 : 0,
       })
         .then((res) => {
-          console.log("res: ", res);
+          message.success({
+            content: `${res.data.message}`,
+          });
         })
         .catch((err) => {
           console.log("err: ", err);
         });
     } else {
       postTurnOffOrOffAirConditioner({
-        value: 0,
+        value: !checked ? 0 : 1,
       })
         .then((res) => {
-          console.log("res:1 ", res);
+          message.success({
+            content: `${res.data.message}`,
+          });
         })
         .catch((err) => {
-          console.log("err:1 ", err);
+          console.log("err: ", err);
         });
     }
-  };
+  }, [checked]);
 
   return (
     <div className="px-5">
@@ -234,7 +241,7 @@ export default function HomePage() {
       <div className="mt-5 flex items-center">
         <div className="p-5 bg-white rounded-lg w-[166px] h-[156px] mr-5">
           <div className="flex items-center justify-between mb-2">
-            <p>Off</p>
+            <p className="text-sm font-bold">{checked ? "On" : "Off"}</p>
             <label className="inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
